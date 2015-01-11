@@ -54,8 +54,10 @@ public class MainActivity extends Activity {
 		
 		EditText txtField = (EditText)findViewById(R.id.edit_message);
 		String message = txtField.getText().toString();
-		
-		connection.sendMessage(message);
+
+		Topic t = new Topic("Math");
+		ChordMessage m = new ChordMessage(t);
+		connection.sendTopic(m);
 	}
 	
 	public static void showMessage(String message){

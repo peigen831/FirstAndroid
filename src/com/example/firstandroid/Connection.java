@@ -76,19 +76,31 @@ public class Connection {
 			payload[0] = (fromNode + " joined").getBytes();
 			otherNode = fromNode;
 			channel = chordManager.getJoinedChannel(fromChannel);
-			channel.sendData(fromNode, CHORD_SAMPLE_MESSAGE_TYPE, payload);
+			//channel.sendData(fromNode, CHORD_SAMPLE_MESSAGE_TYPE, payload);
 		}
 
 		@Override
 		public void onDataReceived(String fromNode, String fromChannel, String payloadType, byte[][] payload) {
-			String message = new String(payload[0]);
 			
+			
+			if(payloadType.equals(CHORD_SAMPLE_MESSAGE_TYPE)){
+				ChordMessage message = ChordMessage.obtainChatMessage(payload[0]);
+				if(message.object instanceof Topic){
+					Topic t = (Topic)message.object;
+					Log.e("Title", t.getTitle());
+				}
+				else Log.e("Error", "Can't find datatype");
+			}
+			
+			/*
 			if(MainActivity.currentActivity.equals(MainActivity.MAIN_ACTIVITY))
 				MainActivity.showMessage(message);
 			else if (MainActivity.currentActivity.equals(MainActivity.NEXT_ACTIVITY))
 				NextActivity.showMessage1(message);
+			*/
 		}
 		
+		@Override
 		public void onNodeLeft(String fromNode, String fromChannel) {
 			Log.e("DEVICE LEAVE", fromNode + " The device has disconnected to the network");
 			String message = fromNode + "leave";
@@ -129,6 +141,11 @@ public class Connection {
 		
 		for(String node: channel.getJoinedNodeList())
 			channel.sendData(node, CHORD_SAMPLE_MESSAGE_TYPE, payload);
+	}
+	
+	public void sendTopic(ChordMessage topic){
+		for(String node: channel.getJoinedNodeList())
+			channel.sendData(node, CHORD_SAMPLE_MESSAGE_TYPE, new byte[][] { topic.getBytes() });
 	}
 	
 	
